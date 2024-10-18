@@ -63,7 +63,7 @@ if st.button("🚀 Analyze"):
 
             # Send the image to the backend server for classification
             files = {'image': uploaded_image.getvalue()}
-            response = requests.post('http://127.0.0.1:5000/classify_image', files=files)
+            response = requests.post('https://accessibility-apartment-checker-production.up.railway.app/classify_image', files=files)
 
             # Process the response
             if response.status_code == 200:
@@ -82,7 +82,7 @@ if st.button("🚀 Analyze"):
     # Process text description if provided
     if description:
         data = {'description': description}
-        response = requests.post('http://127.0.0.1:5000/classify_text', json=data)
+        response = requests.post('https://accessibility-apartment-checker-production.up.railway.app/classify_text', json=data)
 
         if response.status_code == 200:
             result = response.json()
