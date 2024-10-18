@@ -1,9 +1,5 @@
 import streamlit as st
 from PIL import Image
-import os, sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Import classify_image and classify_text from models
 from flask_backend.models.image_classifier import classify_image
 from flask_backend.models.text_classifier import classify_text
 
