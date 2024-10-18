@@ -1,6 +1,11 @@
 import streamlit as st
-import requests
 from PIL import Image
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Import classify_image and classify_text from models
+from flask_backend.models.image_classifier import classify_image
+from flask_backend.models.text_classifier import classify_text
 
 # Title and Explanation
 st.title("🏡 Apartment Accessibility Checker")
@@ -61,35 +66,21 @@ if st.button("🚀 Analyze"):
             image = Image.open(uploaded_image)
             st.image(image, caption=f"Analyzing {uploaded_image.name}...", use_column_width=True)
 
-            # Send the image to the backend server for classification
-            files = {'image': uploaded_image.getvalue()}
-            response = requests.post('https://accessibility-apartment-checker-production.up.railway.app/classify_image', files=files)
-
-            # Process the response
-            if response.status_code == 200:
-                result = response.json()
-
-                # Display detected accessibility features and collect scores
-                if isinstance(result, list) and len(result) > 0:
-                    for feature_info in result:
-                        st.write(f"**Detected Feature:** {feature_info['feature']}, **Confidence Score:** {feature_info['score']:.2f}")
-                        image_scores.append(feature_info['score'])
-                else:
-                    st.write("No accessible features detected.")
+           # Call the classify_image function from models/image_classifier.py
+            result = classify_image(uploaded_image)
+            if result:
+                for feature_info in result:
+                    st.write(f"**Detected Feature:** {feature_info['feature']}, **Confidence Score:** {feature_info['score']:.2f}")
+                    image_scores.append(feature_info['score'])
             else:
-                st.write(f"Failed to classify image **{uploaded_image.name}**.")
+                st.write(f"No accessible features detected in {uploaded_image.name}.")
 
     # Process text description if provided
     if description:
-        data = {'description': description}
-        response = requests.post('https://accessibility-apartment-checker-production.up.railway.app/classify_text', json=data)
-
-        if response.status_code == 200:
-            result = response.json()
-            st.write(f"**Text Classification:** {result['labels'][0]}, **Confidence Score:** {result['scores'][0]:.2f}")
-            text_score = result['scores'][0]  # Store the text confidence score
-        else:
-            st.write("Failed to connect to the server for text classification")
+        # Call the classify_text function from models/text_classifier.py
+        text_result = classify_text(description)
+        st.write(f"**Text Classification:** {text_result['labels'][0]}, **Confidence Score:** {text_result['scores'][0]:.2f}")
+        text_score = text_result['scores'][0]
 
     # Calculate and display the general confidence score
     general_confidence = calculate_general_confidence(image_scores, text_score)
