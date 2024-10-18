@@ -1,0 +1,20 @@
+# Python-related files
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment and virtualenv files
+venv/
+env/
+*.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Flask-specific files
+instance/
+*.log
+
+# Streamlit cache and files
+.streamlit/
